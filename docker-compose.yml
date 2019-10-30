@@ -3,7 +3,8 @@ version: "3.1"
 services:
   app:
     build:
-      context: ./docker/api
+      context: .
+      dockerfile: ./docker/api/Dockerfile
     tty: true
     working_dir: /var/www/html/tests
     ports:
@@ -13,7 +14,7 @@ services:
     depends_on:
       - postgres
       - nginx
-#    command: php artisan serve --host=0.0.0.0 --port=8000
+    command: bash -c "composer install && php artisan key:generate && php artisan migrate && php artisan db:seed && chmod -R 777 storage && npm ci && npm run prod && php"
   nginx:
     image: nginx:1.13
     ports:
@@ -44,5 +45,15 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_ROOT_PASSWORD: postgres
+  redis:
+    image: redis:5.0.5
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - 6379:6379
+    volumes:
+      - redis-volume:/var/lib/redis
+    restart: always
 volumes:
   postgres-volume:
+  redis-volume:
