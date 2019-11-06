@@ -15,6 +15,6 @@ class CalculateShares
 
         $m = $value - $p - $s;
 
-        return [$p, $s, $m];
+        return [$s, $p, $m];
     }
 }
